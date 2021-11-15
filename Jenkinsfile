@@ -8,18 +8,20 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'cd bookzy'
-                sh 'mvn -B -DskipTests clean package'
+                dir("bookzy") {
+                    sh 'mvn -B -DskipTests clean package'
+                }
             }
         }
         stage('Test') { 
             steps {
-                sh 'cd bookzy'
-                sh 'mvn test' 
+                dir("bookzy") {
+                    sh 'mvn test'
+                }
             }
             post {
                 always {
-                    junit 'bookzy/target/surefire-reports/*.xml' 
+                    junit './bookzy/target/surefire-reports/*.xml' 
                 }
             }
         }
