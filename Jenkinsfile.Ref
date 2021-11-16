@@ -1,0 +1,48 @@
+node('master') {
+  try {
+    stage('code checkout') {
+      checkout([$class: 'GitSCM', branches: [
+        [name: '*/master']
+      ], extensions: [], userRemoteConfigs: [
+        [credentialsId: '66d37c8f-3873-4a49-9def-b2ff24af11ba', url:
+          'https://github.com/umahato/MavenBuild.git'
+        ]
+      ]])
+    }
+    stage('Build') {
+      sh 'mvn clean install'
+    }
+    echo ""
+    "
+    $JOB_NAME - Build # BUILD_NUMBER - $NODE_NAME:
+      Check console output at $BUILD_URL to approve Deployment.
+    ""
+    "
+
+    emailext body: ''
+    'Please Approve Deployment
+    $(BUILD_URL)
+    ''
+    ', subject: '
+    Please Approve Deployment $(BUILD_NUMBER)
+    ', to: 
+    'umesh.bhowra@gmail.com'
+
+    input message: 'Proceed with Deployment', ok: 'Deploy'
+    stage('Deployment') {
+      deploy adapters: [tomcat9(credentialsId: '447ac6d6-aaaa-44b5-bb17-6bc7381c12c2', path: '', url:
+        'http://localhost:8081/')], contextPath: '/simplilearn1', war: 'target/*.war'
+    }
+  } catch (Exception e) {
+    currentBuild.result = "Failure"
+    echo "Jenkins pipeline failed ! check logs"
+  } finally {
+    echo "Jenkins job status for build url ${BUILD_URL}: ${currentBuild.result}"
+    emailext body: ''
+    'Please Approve Deployment $(BUILD_URL)'
+    '', subject: 'Please Approve 
+    Deployment $(BUILD_NUMBER)
+    ', to: '
+    manager @example.com '
+  }
+}

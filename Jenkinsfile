@@ -21,7 +21,9 @@ pipeline {
             }
             post {
                 always {
-                    junit './bookzy/target/surefire-reports/*.xml' 
+                    dir("bookzy") {
+                        junit 'target/surefire-reports/*.xml' 
+                    }
                 }
             }
         }
