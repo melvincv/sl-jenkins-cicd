@@ -21,9 +21,15 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') { 
+        stage('Deploy') {
+            agent any
             steps {
-                sh 'bash ./scripts/deploy.sh'
+                echo 'Building Docker image'
+                script {
+                    def customImage = docker.build("bookzyapp:${env.BUILD_ID}")
+                    customImage.push()
+                    customImage.push('latest')
+                }
             }
         }
     }
