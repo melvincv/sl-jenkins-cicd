@@ -22,14 +22,8 @@ pipeline {
             }
         }
         stage('Deploy') {
-            agent {
-                docker {
-                    image 'docker:dind'
-                }
-            }
-            
+            agent any
             steps {
-                echo 'Building Docker image'
                 script {
                     def customImage = docker.build("bookzyapp:${env.BUILD_ID}")
                     customImage.push()
