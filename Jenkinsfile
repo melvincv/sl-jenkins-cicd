@@ -22,10 +22,12 @@ pipeline {
             }
         }
         stage('Deploy') {
-            agent
-            docker {
-                image 'docker:dind'
+            agent {
+                docker {
+                    image 'docker:dind'
+                }
             }
+            
             steps {
                 echo 'Building Docker image'
                 script {
