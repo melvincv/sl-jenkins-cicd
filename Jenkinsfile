@@ -24,11 +24,7 @@ pipeline {
         stage('Deploy') {
             agent any
             steps {
-                script {
-                    def customImage = docker.build("bookzyapp:${env.BUILD_ID}")
-                    customImage.push()
-                    customImage.push('latest')
-                }
+                sh 'bash ./scripts/deploy.sh'
             }
         }
     }
